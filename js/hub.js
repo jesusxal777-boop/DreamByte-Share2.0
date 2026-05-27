@@ -34,8 +34,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      // Regla de Oro 1: Límite estricto de 100 MB (100 * 1024 * 1024 bytes)
-      const LIMITE_MB = 100 * 1024 * 1024;
+      // Regla de Oro 1: Límite estricto de 50 MB (100 * 1024 * 1024 bytes)
+      const LIMITE_MB = 50 * 1024 * 1024;
       if (file.size > LIMITE_MB) {
         alert("⚠️ Acceso denegado: El archivo excede el límite de 100 MB por usuario.");
         return;
