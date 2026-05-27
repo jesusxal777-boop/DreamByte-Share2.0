@@ -1,31 +1,27 @@
-<div class="login-container frutiger-glass">
-  <div class="logo-area">
-    <h1>DreamByte <span>Share 2.0</span></h1>
-    <p class="subtitle">Cloud Nebula Storage</p>
-  </div>
-  
-  <form class="login-form">
-    <div class="input-group">
-      <label><i class="icon-user"></i> Usuario o Email</label>
-      <input type="email" placeholder="usuario@dreambyte.com" required>
-    </div>
-    <div class="input-group">
-      <label><i class="icon-lock"></i> Contraseña</label>
-      <input type="password" placeholder="••••••••" required>
-    </div>
-    
-    <div class="form-actions">
-      <label class="remember-me">
-        <input type="checkbox"> <span>Recordar sesión</span>
-      </label>
-      <a href="#" class="forgot-link">¿Olvidaste el acceso?</a>
-    </div>
-    
-    <button type="submit" class="btn-glossy">Iniciar Enlace</button>
-    
-    <div class="register-section">
-      <p>¿No tienes cuenta?</p>
-      <a href="register.html" class="btn-register">o registrate</a>
-    </div>
-  </form>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<script>
+  const form = document.querySelector('.login-form');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    // Autenticar con Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert(`❌ Acceso denegado: ${error.message}`);
+    } else {
+      // Supabase guarda automáticamente la sesión en el LocalStorage del navegador
+      alert("⚡ Enlace establecido. Bienvenido a DreamByte Share.");
+      window.location.href = 'dashboard.html'; 
+    }
+  });
+</script>
