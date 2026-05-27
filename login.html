@@ -1,62 +1,34 @@
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamByte Share 2.0 - Login</title>
+  
   <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
 
-  <script src="js/config.js"></script>
-
-  <script src="js/main.js"></script>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const form = document.querySelector('form') || document.querySelector('.login-form');
+  <div class="login-container frutiger-glass">
+    
+    <div class="logo-area">
+      <h1>DreamByte <span>Share 2.0</span></h1>
+      <p class="subtitle">Cloud Nebula Storage</p>
+    </div>
+    
+    <form class="login-form">
+      <div class="input-group">
+        <label>Usuario o Email</label>
+        <input type="email" id="email" placeholder="usuario@dreambyte.com" required>
+      </div>
       
-      if (form) {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
+      <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      
+      <button type="submit" class="btn-glossy">Iniciar Enlace</button>
+    </form>
 
-          const emailInput = document.getElementById('email') || document.querySelector('input[type="email"]');
-          const passwordInput = document.getElementById('password') || document.querySelector('input[type="password"]');
+  </div>
 
-          if (!emailInput || !passwordInput) {
-            alert("⚠️ Error de interfaz: No se encontraron los campos de acceso.");
-            return;
-          }
-
-          const email = emailInput.value;
-          const password = passwordInput.value;
-
-          // Buscamos el cliente global de Supabase
-          const clienteSupa = window.supabaseClient || window.supabase;
-
-          if (!clienteSupa) {
-            alert("❌ Error de red: No se pudo conectar con el núcleo de Supabase.");
-            return;
-          }
-
-          try {
-            const { data, error } = await clienteSupa.auth.signInWithPassword({
-              email: email,
-              password: password,
-            });
-
-            if (error) {
-              alert(`❌ Acceso denegado: ${error.message}`);
-            } else {
-              alert("⚡ Enlace establecido con éxito. Bienvenido a DreamByte Share.");
-              window.location.href = 'dashboard.html';
-            }
-          } catch (err) {
-            alert("🚀 Error inesperado en la terminal de inicio.");
-            console.error(err);
-          }
-        });
-      }
-    });
-  </script>
-</body> ```
-
-## 🎯 Último paso en tu iPad/Android
-1. Edita el `login.html` en GitHub, quita la línea `<script src="js/main.js"></script>` de arriba (del `<head>`) y pon el bloque ordenado abajo.
-2. Guarda los cambios (*Commit*).
-3. Entra desde tu dispositivo usando una **pestaña de incógnito/privada** o añade `?v=3` al final de la URL para saltarte la caché vieja del navegador.
-
-¡Al quitar ese bloqueo del `<head>`, tu interfaz Frutiger Aero va a encender al instante!
