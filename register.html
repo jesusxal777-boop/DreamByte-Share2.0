@@ -1,1 +1,65 @@
+<div class="login-container register-container frutiger-glass">
+  <div class="logo-area">
+    <h1>DreamByte <span>Share 2.0</span></h1>
+    <p class="subtitle">Crear Nueva Identidad en la Nube</p>
+  </div>
+  
+  <form class="login-form">
+    <!-- Fila de Nombre y Usuario -->
+    <div class="form-grid">
+      <div class="input-group">
+        <label><i class="icon-profile"></i> Nombre Completo</label>
+        <input type="text" placeholder="Ej. Alex Morse" required>
+      </div>
+      
+      <div class="input-group">
+        <label><i class="icon-user"></i> Nombre de Usuario</label>
+        <input type="text" placeholder="alex_byte" required>
+      </div>
+    </div>
 
+    <!-- Correo Electrónico -->
+    <div class="input-group">
+      <label><i class="icon-mail"></i> Correo Electrónico</label>
+      <input type="email" placeholder="tu_correo@dreambyte.com" required>
+    </div>
+    
+    <!-- Sección de Contraseña -->
+    <div class="form-grid">
+      <div class="input-group">
+        <label><i class="icon-lock"></i> Contraseña</label>
+        <input type="password" id="register-pass" placeholder="••••••••" required>
+      </div>
+      
+      <div class="input-group">
+        <label><i class="icon-shield"></i> Confirmar Contraseña</label>
+        <input type="password" id="confirm-pass" placeholder="••••••••" required>
+      </div>
+    </div>
+
+    <!-- Medidor de seguridad de contraseña (UX/UI Frutiger Moderno) -->
+    <div class="password-strength-wrapper">
+      <div class="strength-bar">
+        <!-- Modificar el width mediante JavaScript según la seguridad -->
+        <div class="strength-fill" style="width: 65%;"></div>
+      </div>
+      <span class="strength-text">Seguridad del Enlace: <strong style="color: var(--cyan-glow);">Estable (Encriptación Alta)</strong></span>
+    </div>
+    
+    <!-- Términos y Condiciones -->
+    <div class="form-actions registration-terms">
+      <label class="remember-me">
+        <input type="checkbox" required> 
+        <span>Acepto las <a href="#" class="inline-link">Directivas de Almacenamiento</a> y privacidad.</span>
+      </label>
+    </div>
+    
+    <!-- Botón de acción principal -->
+    <button type="submit" class="btn-glossy btn-register">Inicializar Cuenta</button>
+    
+    <!-- Enlace de retorno -->
+    <div class="form-footer-link">
+      <p>¿Ya tienes una terminal asignada? <a href="login.html" class="forgot-link">Inicia sesión aquí</a></p>
+    </div>
+  </form>
+</div>
