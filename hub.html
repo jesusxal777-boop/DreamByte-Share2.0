@@ -1,43 +1,60 @@
-<div class="dashboard-layout">
-  <aside class="sidebar frutiger-glass">
-    <div class="brand">DS 2.0</div>
-    <nav class="menu">
-      <a href="#" class="active"><i class="icon-folder"></i> Mis Archivos</a>
-      <a href="#"><i class="icon-share"></i> Compartidos</a>
-      <a href="#"><i class="icon-star"></i> Destacados</a>
-    </nav>
-    <div class="storage-counter">
-      <span class="label">Almacenamiento Cuántico</span>
-      <div class="progress-bar-container">
-        <div class="progress-fill" style="width: 42%;"></div>
-      </div>
-      <span class="stats">12.6 GB / 30 GB</span>
-    </div>
-  </aside>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamByte Share 2.0 - Hub Especializado</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
 
-  <main class="main-content">
-    <header class="dash-header frutiger-glass">
-      <input type="search" placeholder="Escanear archivos..." class="search-input">
-      <button class="btn-glossy upload-shortcut">+ Subir Archivo</button>
-    </header>
-
-    <section class="files-view frutiger-glass">
-      <div class="view-header">
-        <h2>Raíz / Documentos</h2>
-        <div class="view-toggle">🧬 Lista | 🎛️ Cuadrícula</div>
-      </div>
+  <div class="main-wrapper hub-wrapper">
+    
+    <!-- Panel Central -->
+    <div class="hub-container frutiger-glass">
       
-      <div class="files-grid">
-        <div class="file-item folder">
-          <div class="item-icon">📁</div>
-          <span class="item-name">Proyectos_C++</span>
+      <!-- Barra superior de usuario -->
+      <div class="hub-header">
+        <div class="brand">
+          <h2>DreamByte <span>Share 2.0</span></h2>
+          <span class="badge">Terminal Activa</span>
         </div>
-        <div class="file-item file">
-          <div class="item-icon">📄</div>
-          <span class="item-name">patch_note.txt</span>
-          <span class="item-size">4 KB</span>
+        <button onclick="localStorage.clear(); sessionStorage.clear(); window.location.href='login.html';" class="btn-logout">Desconectar</button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Zona de Carga (Upload) -->
+      <div class="upload-section">
+        <h3>🛰️ Inyectar Archivo a la Nube</h3>
+        <p class="section-desc">Límite cuántico de <strong>100 MB</strong> por archivo. Los archivos sin descargas se purgan automáticamente en 7 días.</p>
+        
+        <form id="upload-form" class="upload-box">
+          <input type="file" id="file-input" required>
+          <button type="submit" class="btn-glossy">Subir al Almacenamiento</button>
+        </form>
+      </div>
+
+      <!-- Zona de Archivos (Buscador y Descargas) -->
+      <div class="storage-section">
+        <h3>📁 Archivos en Orbita</h3>
+        
+        <!-- Lista Dinámica de Archivos -->
+        <div id="files-list" class="files-grid">
+          <!-- Los archivos cargados con JS aparecerán aquí de forma automática -->
         </div>
       </div>
-    </section>
-  </main>
-</div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCRIPTS DE INFRAESTRUCTURA                                  -->
+  <!-- ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/hub.js"></script> <!-- Lógica de subidas y descargas -->
+
+</body>
+</html>
