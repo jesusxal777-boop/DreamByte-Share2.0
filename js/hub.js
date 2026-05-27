@@ -1,5 +1,5 @@
 /**
- * DreamByte Share 2.0 - Hub, Storage & Social Engine
+ * DreamByte Share 2.0 - Hub Especializado con Sistema de Rangos (RBAC)
  */
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -10,20 +10,38 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Proteger la página
+  // 1. Proteger la página
   const { data: { session } } = await clienteSupa.auth.getSession();
   if (!session) {
     window.location.href = 'login.html';
     return;
   }
 
-  // Guardar datos del usuario en ventana global para usar en likes/comentarios
   window.usuarioActivo = session.user;
 
-  // Cargar los archivos
+  // 2. Obtener el rango real del usuario desde la tabla 'profiles'
+  try {
+    const { data: perfil, error } = await clienteSupa
+      .from('profiles')
+      .select('role, username')
+      .eq('id', window.usuarioActivo.id)
+      .single();
+
+    if (!error && perfil) {
+      window.usuarioActivo.rango = perfil.role;
+      window.usuarioActivo.username = perfil.username;
+    } else {
+      window.usuarioActivo.rango = 'usuario'; // Por si acaso
+      window.usuarioActivo.username = window.usuarioActivo.email.split('@')[0];
+    }
+  } catch (err) {
+    window.usuarioActivo.rango = 'usuario';
+  }
+
+  // Cargar los archivos de la nube
   listarArchivos();
 
-  // Lógica para Subir Archivos
+  // 3. Lógica para Subir Archivos
   const uploadForm = document.getElementById('upload-form');
   const fileInput = document.getElementById('file-input');
 
@@ -33,7 +51,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const file = fileInput.files[0];
       if (!file) return;
 
-      const LIMITE_MB = 50 * 1024 * 1024; // 50MB
+      const LIMITE_MB = 50 * 1024 * 1024; // Límite del plan gratis
       if (file.size > LIMITE_MB) {
         alert("⚠️ El plan gratuito limita las subidas a 50 MB por archivo.");
         return;
@@ -59,7 +77,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Función principal para renderizar el feed
+// 4. Listar Archivos con botones de Moderación / Admin
 async function listarArchivos() {
   const clienteSupa = window.supabaseClient || window.supabase;
   const listaContenedor = document.getElementById('files-list');
@@ -78,7 +96,6 @@ async function listarArchivos() {
 
     listaContenedor.innerHTML = '';
 
-    // Mapear cada archivo e inyectarle contadores de Supabase
     for (const item of archivos) {
       if (item.name === '.emptyFolderPlaceholder') continue;
 
@@ -86,13 +103,12 @@ async function listarArchivos() {
       const tamanoKB = (item.metadata.size / 1024).toFixed(1);
       const tamanoFinal = tamanoKB > 1024 ? `${(tamanoKB / 1024).toFixed(1)} MB` : `${tamanoKB} KB`;
 
-      // Consultar Likes de este archivo en tiempo real
+      // Consultar Likes
       const { count: totalLikes } = await clienteSupa
         .from('likes')
         .select('*', { count: 'exact', head: true })
         .eq('file_name', item.name);
 
-      // Consultar si el usuario actual ya le dio like
       const { data: yaTieneLike } = await clienteSupa
         .from('likes')
         .select('id')
@@ -101,7 +117,12 @@ async function listarArchivos() {
 
       const claseLike = yaTieneLike && yaTieneLike.length > 0 ? 'btn-like activo' : 'btn-like';
 
-      // Crear tarjeta visual
+      // 👑 SUPERPODER: Si eres Admin o Mod, se genera el botón de borrado
+      let botonBorrar = '';
+      if (window.usuarioActivo.rango === 'admin' || window.usuarioActivo.rango === 'moderador') {
+        botonBorrar = `<button class="btn-delete-file" onclick="borrarArchivoDeLaNube('${item.name}')">🗑️ Borrar</button>`;
+      }
+
       const card = document.createElement('div');
       card.className = 'file-card';
       card.innerHTML = `
@@ -117,7 +138,10 @@ async function listarArchivos() {
           <button class="${claseLike}" onclick="interactuarLike('${item.name}', this)">
             ❤️ <span class="like-count">${totalLikes || 0}</span>
           </button>
-          <a href="${urlData.publicUrl}" download="${item.name}" target="_blank" class="btn-download">Descargar</a>
+          <div class="action-buttons-group">
+            <a href="${urlData.publicUrl}" download="${item.name}" target="_blank" class="btn-download">Descargar</a>
+            ${botonBorrar}
+          </div>
         </div>
 
         <div class="comments-section">
@@ -131,83 +155,101 @@ async function listarArchivos() {
         </div>
       `;
       listaContenedor.appendChild(card);
-      
-      // Cargar los comentarios de este archivo de inmediato
       renderizarComentarios(item.name);
     }
 
   } catch (err) {
-    console.error(err);
     listaContenedor.innerHTML = "<p class='error-text'>❌ Error al mapear los archivos.</p>";
   }
 }
 
-// Lógica para dar y quitar Likes
+// Lógica de Likes
 async function interactuarLike(fileName, boton) {
   const clienteSupa = window.supabaseClient || window.supabase;
   const contadorSpan = boton.querySelector('.like-count');
   let currentLikes = parseInt(contadorSpan.innerText);
 
   if (boton.classList.contains('activo')) {
-    // Quitar like
     boton.classList.remove('activo');
     contadorSpan.innerText = currentLikes - 1;
     await clienteSupa.from('likes').delete().eq('file_name', fileName).eq('user_id', window.usuarioActivo.id);
   } else {
-    // Dar like
     boton.classList.add('activo');
     contadorSpan.innerText = currentLikes + 1;
     await clienteSupa.from('likes').insert([{ file_name: fileName, user_id: window.usuarioActivo.id }]);
   }
 }
 
-// Lógica para renderizar los comentarios guardados
+// Renderizar Comentarios con Etiquetas de Rango
 async function renderizarComentarios(fileName) {
   const clienteSupa = window.supabaseClient || window.supabase;
   const cajaId = `box-${btoa(fileName).replace(/=/g, '')}`;
   const caja = document.getElementById(cajaId);
   if (!caja) return;
 
+  // Hacemos un JOIN interno para traer el comentario junto con el rango del perfil
   const { data: comentarios, error } = await clienteSupa
     .from('comments')
-    .select('*')
+    .select(`
+      id,
+      comment_text,
+      username,
+      user_id,
+      profiles (role)
+    `)
     .eq('file_name', fileName)
-    .order('created_at', { ascending: true });
+    .order('id', { ascending: true });
 
   if (error || !comentarios || comentarios.length === 0) {
     caja.innerHTML = "<p class='no-comments'>Sin comentarios aún.</p>";
     return;
   }
 
-  caja.innerHTML = comentarios.map(c => `
-    <div class="comment-item">
-      <strong>@${c.username}:</strong> <span>${c.comment_text}</span>
-    </div>
-  `).join('');
+  caja.innerHTML = comentarios.map(c => {
+    const rangoUser = c.profiles ? c.profiles.role : 'usuario';
+    // Le asignamos una clase CSS según el rango para pintarlo brillante
+    return `
+      <div class="comment-item">
+        <span class="badge-role role-${rangoUser}">${rangoUser.toUpperCase()}</span>
+        <strong>@${c.username}:</strong> <span>${c.comment_text}</span>
+      </div>
+    `;
+  }).join('');
 }
 
-// Lógica para enviar un nuevo comentario
+// Enviar Comentario
 async function enviarComentario(fileName) {
   const clienteSupa = window.supabaseClient || window.supabase;
   const inputId = `input-${btoa(fileName).replace(/=/g, '')}`;
   const input = document.getElementById(inputId);
-  
   if (!input || input.value.trim() === '') return;
-
-  // Usamos el email o parte de él como nombre temporal si no guardaron username
-  const nickname = window.usuarioActivo.user_metadata.username || window.usuarioActivo.email.split('@')[0];
 
   const { error } = await clienteSupa.from('comments').insert([{
     file_name: fileName,
     user_id: window.usuarioActivo.id,
-    username: nickname,
+    username: window.usuarioActivo.username,
     comment_text: input.value.trim()
   }]);
 
-  if (error) {
-    alert("No se pudo publicar el comentario.");
-  } else {
+  if (!error) {
     input.value = '';
-    renderizarComentarios(fileName); // Recargar sublista
+    renderizarComentarios(fileName);
+  }
+}
+
+// 👑 EXCLUSIVO ADMIN: Función para borrar archivos del Storage
+async function borrarArchivoDeLaNube(fileName) {
+  if (!confirm("🚨 ¿Seguro que deseas purgar este archivo del búnker permanentemente?")) return;
+
+  const clienteSupa = window.supabaseClient || window.supabase;
+
+  try {
+    const { error } = await clienteSupa.storage.from('dreambyte-files').remove([fileName]);
+    if (error) throw error;
+    
+    alert("💥 Archivo eliminado del búnker.");
+    listarArchivos(); // Recargar el feed
+  } catch (err) {
+    alert(`No se pudo borrar: ${err.message}`);
   }
 }
