@@ -40,4 +40,46 @@ body {
 .btn-glossy:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+  /* Disposición en dos columnas para formularios más largos */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Indicador de fuerza de contraseña estilo "Líquido/Glow" */
+.password-strength-wrapper {
+  margin-top: 8px;
+}
+
+.strength-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%; /* Cambiar con JS (e.g., 33%, 66%, 100%) */
+  background: linear-gradient(90deg, #ff0055, var(--cyan-glow));
+  transition: width 0.4s cubic-bezier(0.1, 0.8, 0.2, 1);
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+.strength-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+  text-align: right;
+  margin-top: 4px;
+}
+
 }
