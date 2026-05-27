@@ -2,19 +2,16 @@
 
   <script src="js/config.js"></script>
 
+  <script src="js/main.js"></script>
+
   <script>
-    // Aseguramos que el DOM y Supabase estén listos en el dispositivo móvil
     window.addEventListener('DOMContentLoaded', () => {
-      
-      // Capturamos el formulario por su clase o etiqueta
       const form = document.querySelector('form') || document.querySelector('.login-form');
       
       if (form) {
         form.addEventListener('submit', async (e) => {
-          e.preventDefault(); // Evita que la página se recargue e intente buscar un backend
+          e.preventDefault();
 
-          // Capturamos los valores de los inputs
-          // Nota: Asegúrate de que tus <input> tengan estos IDs exactos (id="email" e id="password")
           const emailInput = document.getElementById('email') || document.querySelector('input[type="email"]');
           const passwordInput = document.getElementById('password') || document.querySelector('input[type="password"]');
 
@@ -26,8 +23,7 @@
           const email = emailInput.value;
           const password = passwordInput.value;
 
-          // Verificamos que el cliente de Supabase exista (fíjate cómo lo nombraste en tu js/config.js)
-          // Si en tu config.js usaste 'supabase', cambia 'supabaseClient' por 'supabase' aquí abajo.
+          // Buscamos el cliente global de Supabase
           const clienteSupa = window.supabaseClient || window.supabase;
 
           if (!clienteSupa) {
@@ -36,7 +32,6 @@
           }
 
           try {
-            // Intentamos iniciar sesión
             const { data, error } = await clienteSupa.auth.signInWithPassword({
               email: email,
               password: password,
@@ -46,13 +41,21 @@
               alert(`❌ Acceso denegado: ${error.message}`);
             } else {
               alert("⚡ Enlace establecido con éxito. Bienvenido a DreamByte Share.");
-              window.location.href = 'dashboard.html'; // Redirección al Hub
+              window.location.href = 'dashboard.html';
             }
           } catch (err) {
-            alert("🚀 Error cuántico inesperado en la terminal de inicio.");
+            alert("🚀 Error inesperado en la terminal de inicio.");
             console.error(err);
           }
         });
       }
     });
   </script>
+</body> ```
+
+## 🎯 Último paso en tu iPad/Android
+1. Edita el `login.html` en GitHub, quita la línea `<script src="js/main.js"></script>` de arriba (del `<head>`) y pon el bloque ordenado abajo.
+2. Guarda los cambios (*Commit*).
+3. Entra desde tu dispositivo usando una **pestaña de incógnito/privada** o añade `?v=3` al final de la URL para saltarte la caché vieja del navegador.
+
+¡Al quitar ese bloqueo del `<head>`, tu interfaz Frutiger Aero va a encender al instante!
