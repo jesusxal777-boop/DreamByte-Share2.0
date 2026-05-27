@@ -9,26 +9,66 @@
 </head>
 <body>
 
-  <div class="login-container frutiger-glass">
+  <div class="main-wrapper">
     
-    <div class="logo-area">
-      <h1>DreamByte <span>Share 2.0</span></h1>
-      <p class="subtitle">Cloud Nebula Storage</p>
+    <div class="login-container frutiger-glass">
+      
+      <div class="logo-area">
+        <h1>DreamByte <span>Share 2.0</span></h1>
+        <p class="subtitle">Cloud Nebula Storage</p>
+      </div>
+      
+      <form class="login-form">
+        
+        <div class="input-group">
+          <label for="email">
+            <span class="icon">📧</span> Correo Electrónico
+          </label>
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="usuario@dreambyte.com" 
+            required
+          >
+        </div>
+        
+        <div class="input-group">
+          <label for="password">
+            <span class="icon">🔒</span> Contraseña
+          </label>
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="••••••••" 
+            required
+          >
+        </div>
+        
+        <div class="form-actions">
+          <label class="remember-me">
+            <input type="checkbox" id="remember"> 
+            <span>Recordar enlace</span>
+          </label>
+          <a href="#" class="forgot-link">¿Olvidaste el acceso?</a>
+        </div>
+        
+        <button type="submit" class="btn-glossy">Iniciar Enlace</button>
+        
+        <div class="form-footer-link">
+          <p>¿No tienes terminal asignada? <a href="register.html" class="forgot-link">Crea una cuenta aquí</a></p>
+        </div>
+        
+      </form>
     </div>
-    
-    <form class="login-form">
-      <div class="input-group">
-        <label>Usuario o Email</label>
-        <input type="email" id="email" placeholder="usuario@dreambyte.com" required>
-      </div>
-      
-      <div class="input-group">
-        <label>Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••" required>
-      </div>
-      
-      <button type="submit" class="btn-glossy">Iniciar Enlace</button>
-    </form>
-
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
+
+  <script src="js/config.js"></script>
+
+  <script src="js/main.js"></script>
+
+  <script src="js/login.js"></script>
+
+</body>
+</html>
