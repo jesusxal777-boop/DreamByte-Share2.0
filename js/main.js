@@ -20,12 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function protegerDashboard() {
     const paginasPrivadas = ['dashboard.html', 'upload.html'];
-    const paginaActual = window.location.pathname.split('/').pop();
+    
+    // Obtenemos el nombre del archivo actual de la URL de forma segura
+    const pathSeggments = window.location.pathname.split('/');
+    const paginaActual = pathSeggments[pathSeggments.length - 1] || 'index.html';
 
-    // Si no estamos en una página privada, no hacemos nada
-    if (!paginasPrivadas.includes(paginaActual)) return;
+    // Parche de seguridad: Si estamos en login o registro, ignorar la validación para evitar bucles
+    if (paginaActual === 'login.html' || paginaActual === 'register.html') {
+        return;
+    }
 
-    // Esperamos un momento a que Supabase esté disponible globalmente
+    // Si la página actual no está marcada como privada, no hacemos nada
+    if (!paginasPrivadas.includes(paginaActual)) {
+        return;
+    }
+
+    // Verificamos la disponibilidad del cliente de Supabase
     const clientSupa = window.supabaseClient || window.supabase;
     
     if (!clientSupa) {
@@ -34,19 +44,25 @@ async function protegerDashboard() {
         return;
     }
 
-    // Validar si hay una sesión activa en el almacenamiento del navegador
-    const { data: { session } } = await clientSupa.auth.getSession();
+    try {
+        // Validar si hay una sesión activa en el almacenamiento del navegador
+        const { data: { session }, error } = await clientSupa.auth.getSession();
 
-    if (!session) {
-        console.warn("🔒 Acceso no autorizado detectado. Redirigiendo a la terminal de login.");
-        window.location.href = 'login.html';
-    } else {
-        console.log(`📡 Enlace cuántico verificado para: ${session.user.email}`);
-        // [UX] Si tienes un elemento de texto para el nombre de usuario, píntalo aquí:
-        const userDisplay = document.getElementById('user-display-name');
-        if (userDisplay) {
-            userDisplay.textContent = session.user.user_metadata.username || session.user.email.split('@')[0];
+        if (error || !session) {
+            console.warn("🔒 Acceso no autorizado detectado. Redirigiendo a la terminal de login.");
+            window.location.href = 'login.html';
+        } else {
+            console.log(`📡 Enlace cuántico verificado para: ${session.user.email}`);
+            
+            // Renderizar nombre de usuario en la interfaz si el elemento existe
+            const userDisplay = document.getElementById('user-display-name');
+            if (userDisplay) {
+                userDisplay.textContent = session.user.user_metadata.username || session.user.email.split('@')[0];
+            }
         }
+    } catch (err) {
+        console.error("Error crítico durante la verificación de la sesión:", err);
+        window.location.href = 'login.html';
     }
 }
 
@@ -58,7 +74,7 @@ function aplicarEfectosGlassmorphism() {
     const tarjetasGlass = document.querySelectorAll('.frutiger-glass');
 
     tarjetasGlass.forEach(tarjeta => {
-        // Efecto de reflejo líquido que sigue levemente al cursor (opcional/sutil)
+        // Efecto de reflejo líquido que sigue levemente al cursor
         tarjeta.addEventListener('mousemove', (e) => {
             const rect = tarjeta.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -83,11 +99,11 @@ function inicializarSubidaVisual() {
     ['dragenter', 'dragover'].forEach(eventName => {
         dropzone.addEventListener(eventName, (e) => {
             e.preventDefault();
-            dropzone.classList.add('dropzone-active'); // Añade brillo morado/celeste neón en CSS
+            dropzone.classList.add('dropzone-active'); // Añade brillo neón en CSS
         }, false);
     });
 
-    // Eventos cuando el archivo sale de la zona de arrastre
+    // Eventos cuando el archivo sale de la zona de arrastre o se suelta
     ['dragleave', 'drop'].forEach(eventName => {
         dropzone.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -103,5 +119,15 @@ function inicializarSubidaVisual() {
 async function cerrarSesionTerminal() {
     const clientSupa = window.supabaseClient || window.supabase;
     if (clientSupa) {
-        await clientSupa.auth.
-
+        try {
+            await clientSupa.auth.signOut();
+            console.log("🔌 Enlace finalizado.");
+            window.location.href = 'login.html';
+        } catch (err) {
+            console.error("Error al intentar cerrar sesión:", err);
+            window.location.href = 'login.html';
+        }
+    } else {
+        window.location.href = 'login.html';
+    }
+}
