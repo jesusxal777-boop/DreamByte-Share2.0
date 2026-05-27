@@ -1,30 +1,58 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
 
-<script src="js/config.js"></script>
+  <script src="js/config.js"></script>
 
-<script src="js/login.js"></script> 
+  <script>
+    // Aseguramos que el DOM y Supabase estén listos en el dispositivo móvil
+    window.addEventListener('DOMContentLoaded', () => {
+      
+      // Capturamos el formulario por su clase o etiqueta
+      const form = document.querySelector('form') || document.querySelector('.login-form');
+      
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault(); // Evita que la página se recargue e intente buscar un backend
 
-<script>
-  const form = document.querySelector('.login-form');
+          // Capturamos los valores de los inputs
+          // Nota: Asegúrate de que tus <input> tengan estos IDs exactos (id="email" e id="password")
+          const emailInput = document.getElementById('email') || document.querySelector('input[type="email"]');
+          const passwordInput = document.getElementById('password') || document.querySelector('input[type="password"]');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+          if (!emailInput || !passwordInput) {
+            alert("⚠️ Error de interfaz: No se encontraron los campos de acceso.");
+            return;
+          }
 
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+          const email = emailInput.value;
+          const password = passwordInput.value;
 
-    // Autenticar con Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+          // Verificamos que el cliente de Supabase exista (fíjate cómo lo nombraste en tu js/config.js)
+          // Si en tu config.js usaste 'supabase', cambia 'supabaseClient' por 'supabase' aquí abajo.
+          const clienteSupa = window.supabaseClient || window.supabase;
+
+          if (!clienteSupa) {
+            alert("❌ Error de red: No se pudo conectar con el núcleo de Supabase.");
+            return;
+          }
+
+          try {
+            // Intentamos iniciar sesión
+            const { data, error } = await clienteSupa.auth.signInWithPassword({
+              email: email,
+              password: password,
+            });
+
+            if (error) {
+              alert(`❌ Acceso denegado: ${error.message}`);
+            } else {
+              alert("⚡ Enlace establecido con éxito. Bienvenido a DreamByte Share.");
+              window.location.href = 'dashboard.html'; // Redirección al Hub
+            }
+          } catch (err) {
+            alert("🚀 Error cuántico inesperado en la terminal de inicio.");
+            console.error(err);
+          }
+        });
+      }
     });
-
-    if (error) {
-      alert(`❌ Acceso denegado: ${error.message}`);
-    } else {
-      // Supabase guarda automáticamente la sesión en el LocalStorage del navegador
-      alert("⚡ Enlace establecido. Bienvenido a DreamByte Share.");
-      window.location.href = 'dashboard.html'; 
-    }
-  });
-</script>
+  </script>
