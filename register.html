@@ -1,37 +1,108 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
-
-<script>
-  const form = document.querySelector('.login-form');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamByte Share 2.0 - Registro</title>
   
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita que la página se recargue
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <div class="main-wrapper">
     
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-pass').value;
-    const confirmPassword = document.getElementById('confirm-pass').value;
-    const username = document.getElementById('register-username').value;
+    <div class="login-container register-container frutiger-glass">
+      
+      <div class="logo-area">
+        <h1>DreamByte <span>Share 2.0</span></h1>
+        <p class="subtitle">Crear Nueva Identidad en la Nube</p>
+      </div>
+      
+      <form class="login-form">
+        
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="register-username">
+              <span class="icon">👤</span> Nombre de Usuario
+            </label>
+            <input 
+              type="text" 
+              id="register-username" 
+              placeholder="alex_byte" 
+              required
+            >
+          </div>
+          
+          <div class="input-group">
+            <label for="register-email">
+              <span class="icon">📧</span> Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              id="register-email" 
+              placeholder="tu_correo@dreambyte.com" 
+              required
+            >
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="register-pass">
+              <span class="icon">🔒</span> Contraseña
+            </label>
+            <input 
+              type="password" 
+              id="register-pass" 
+              placeholder="••••••••" 
+              required
+            >
+          </div>
+          
+          <div class="input-group">
+            <label for="confirm-pass">
+              <span class="icon">🛡️</span> Confirmar Enlace
+            </label>
+            <input 
+              type="password" 
+              id="confirm-pass" 
+              placeholder="••••••••" 
+              required
+            >
+          </div>
+        </div>
 
-    if (password !== confirmPassword) {
-      alert("⚠️ Las contraseñas no coinciden en la terminal.");
-      return;
-    }
+        <div class="password-strength-wrapper">
+          <div class="strength-bar">
+            <div class="strength-fill" style="width: 100%; background: linear-gradient(90deg, var(--purple-glow), var(--cyan-glow));"></div>
+          </div>
+          <span class="strength-text">Seguridad de Encriptación: <strong>Alta</strong></span>
+        </div>
+        
+        <div class="form-actions registration-terms">
+          <label class="remember-me">
+            <input type="checkbox" id="terms" required> 
+            <span>Acepto las directivas cuánticas de privacidad.</span>
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-glossy">Inicializar Cuenta</button>
+        
+        <div class="form-footer-link">
+          <p>¿Ya tienes una terminal asignada? <a href="login.html" class="forgot-link">Inicia sesión aquí</a></p>
+        </div>
+        
+      </form>
+    </div>
+  </div>
 
-    // Registrar en Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        // Guardamos el nombre de usuario dentro de los metadatos del usuario
-        data: { username: username } 
-      }
-    });
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
 
-    if (error) {
-      alert(`❌ Error de enlace: ${error.message}`);
-    } else {
-      alert("🛰️ ¡Identidad cuántica creada con éxito! Redirigiendo...");
-      window.location.href = 'login.html';
-    }
-  });
-</script>
+  <script src="js/config.js"></script>
+
+  <script src="js/main.js"></script>
+
+  <script src="js/register.js"></script>
+
+</body>
+</html>
